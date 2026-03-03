@@ -8,11 +8,12 @@ const axios = require('axios');
 const Jimp = require('jimp');
 const QRCode = require('qrcode');
 const fs = require('fs');
+const os = require('os');
 
 // Ensure temp directory exists for generated tickets
-const tempDir = path.join(__dirname, 'temp_tickets');
+const tempDir = process.env.VERCEL_ENV ? path.join(os.tmpdir(), 'temp_tickets') : path.join(__dirname, 'temp_tickets');
 if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
+    fs.mkdirSync(tempDir, { recursive: true });
 }
 
 // Event Categories
@@ -242,7 +243,10 @@ app.post('/api/register', async (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Open http://localhost:${PORT} to view the Website`);
-});
+if (!process.env.VERCEL_ENV) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+        console.log(`Open http://localhost:${PORT} to view the Website`);
+    });
+}
+module.exports = app;
