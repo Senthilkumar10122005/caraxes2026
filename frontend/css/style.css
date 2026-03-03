@@ -770,8 +770,11 @@ optgroup {
     animation: scroll 30s linear infinite;
 }
 
-.sponsors-track:hover {
-    animation-play-state: paused;
+/* Only pause on hover for devices that have a pointer (desktops) */
+@media (hover: hover) {
+    .sponsors-track:hover {
+        animation-play-state: paused;
+    }
 }
 
 .sponsor-logo {
