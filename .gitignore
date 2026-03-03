@@ -1,0 +1,5 @@
+node_modules/
+.env
+database.sqlite
+temp_tickets/
+.DS_Store
