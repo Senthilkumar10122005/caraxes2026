@@ -16,9 +16,22 @@ if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
 }
 
-// Event Categories
 const techEvents = ['Code Clash', 'Hackathon', 'Paper Presentation', 'Debugging Battle', 'Web Design Challenge'];
 const nonTechEvents = ['Treasure Hunt', 'Quiz Mania', 'Connections', 'Photography Contest', 'Fun Games Arena'];
+
+// Event Metadata for QR Code
+const eventMetadata = {
+    'Code Clash': { venue: 'Lab 1 & 2', time: '11:00 AM' },
+    'Hackathon': { venue: 'Innovation Lab', time: '11:00 AM' },
+    'Paper Presentation': { venue: 'Seminar Hall', time: '11:00 AM' },
+    'Debugging Battle': { venue: 'Lab 3', time: '11:00 AM' },
+    'Web Design Challenge': { venue: 'Lab 4', time: '11:00 AM' },
+    'Treasure Hunt': { venue: 'Campus Wide', time: '11:00 AM' },
+    'Quiz Mania': { venue: 'Mini Auditorium', time: '11:00 AM' },
+    'Connections': { venue: 'Seminar Hall 2', time: '11:00 AM' },
+    'Photography Contest': { venue: 'Campus', time: 'All Day' },
+    'Fun Games Arena': { venue: 'Ground Floor Lobby', time: 'Ongoing' }
+};
 
 // Email Transporter (Configure with user credentials)
 const transporter = nodemailer.createTransport({
@@ -124,8 +137,24 @@ app.post('/api/register', async (req, res) => {
             image.print(smallFont, 50, 115, `College: ${college}`);
             image.print(smallFont, 50, 140, `ID: ${uniqueId}`);
 
-            // Generate QR Code as Buffer
-            const qrBuffer = await QRCode.toBuffer(uniqueId, { errorCorrectionLevel: 'H', margin: 1, width: 150 });
+            // Generate QR Code as Buffer - Enriched with Location & Time
+            const metadata = eventMetadata[event_name] || { venue: 'Main Auditorium', time: '11:00 AM' };
+            const qrText = `CARAXES 2026 VIP PASS\n` +
+                `Attendee: ${name.toUpperCase()}\n` +
+                `Event: ${event_name}\n` +
+                `Venue: ${metadata.venue}\n` +
+                `Time: ${metadata.time}\n` +
+                `Ticket ID: ${uniqueId}`;
+
+            const qrBuffer = await QRCode.toBuffer(qrText, {
+                errorCorrectionLevel: 'H',
+                margin: 1,
+                width: 150,
+                color: {
+                    dark: '#00f2fe',  // Primary theme color
+                    light: '#000000'
+                }
+            });
             const qrImage = await Jimp.read(qrBuffer);
 
             // Overlay QR code onto the ticket (example coordinates: bottom-right)
