@@ -228,7 +228,8 @@ app.post('/api/register', async (req, res) => {
                 await axios.post(process.env.GOOGLE_SHEETS_WEBHOOK_URL, {
                     name, college, department, year, phone, email, event_name,
                     team_name: team_name || "",
-                    team_members: team_members || ""
+                    team_members: team_members || "",
+                    timestamp: new Date().toISOString()
                 });
                 console.log(`Successfully backed up ${email} registration to Google Sheets.`);
             } catch (sheetErr) {
