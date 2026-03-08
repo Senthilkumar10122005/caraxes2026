@@ -1,64 +1,76 @@
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
 const path = require('path');
-const os = require('os');
-const fs = require('fs');
 
-let dbPromise;
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '.env') });
 
-async function getDb() {
-    if (!dbPromise) {
-        const dbPath = process.env.VERCEL_ENV ? path.join(os.tmpdir(), 'database.sqlite') : path.join(__dirname, 'database.sqlite');
-        const isNewDb = process.env.VERCEL_ENV && !fs.existsSync(dbPath);
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'Root',
+    database: process.env.DB_NAME || 'caraxes2026',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
-        dbPromise = open({
-            filename: dbPath,
-            driver: sqlite3.Database
-        }).then(async (db) => {
-            // Auto-initialize tables if running serverless on Vercel
-            if (isNewDb || process.env.VERCEL_ENV) {
-                await db.exec(`
-                    CREATE TABLE IF NOT EXISTS registrations (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT NOT NULL,
-                        college TEXT NOT NULL,
-                        department TEXT NOT NULL,
-                        year TEXT NOT NULL,
-                        phone TEXT NOT NULL,
-                        email TEXT NOT NULL,
-                        event_name TEXT NOT NULL,
-                        team_name TEXT,
-                        team_members TEXT,
-                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-                    );
-                `);
-            }
-            return db;
+// Initialization function to ensure table exists
+// Initialization function to ensure database and table exist
+async function initializeDb() {
+    try {
+        // First connection without database to ensure DB exists
+        const connection = await mysql.createConnection({
+            host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || 'Root'
         });
+
+        await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || 'caraxes2026'}`);
+        await connection.end();
+
+        const dbConn = await pool.getConnection();
+        console.log('Connected to MySQL Database.');
+
+        await dbConn.query(`
+            CREATE TABLE IF NOT EXISTS registrations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                college VARCHAR(255) NOT NULL,
+                department VARCHAR(255) NOT NULL,
+                year VARCHAR(50) NOT NULL,
+                phone VARCHAR(20) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                event_name VARCHAR(255) NOT NULL,
+                team_name VARCHAR(255),
+                team_members TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_registration (email, event_name)
+            )
+        `);
+
+        dbConn.release();
+        console.log('MySQL Database and Table verified.');
+    } catch (err) {
+        console.error('Error connecting/initializing MySQL Database:', err);
     }
-    return dbPromise;
 }
 
+// Start initialization and export the promise
+const ready = initializeDb();
+
 const dbWrapper = {
+    ready, // Exported promise for scripts that need to wait
     getConnection: async () => {
-        const db = await getDb();
-        return { release: () => { } };
+        await ready;
+        return await pool.getConnection();
     },
     query: async (sql, params = []) => {
-        const db = await getDb();
-        if (sql.trim().toUpperCase().startsWith('SELECT')) {
-            const rows = await db.all(sql, params);
-            return [rows, []];
-        } else {
-            const result = await db.run(sql, params);
-            return [result, []];
-        }
+        await ready;
+        // Compatibility wrapper for server.js
+        const [rows, fields] = await pool.execute(sql, params);
+        return [rows, fields];
     }
 };
-
-// Try to connect to verify
-getDb()
-    .then(() => console.log('Successfully connected to the SQLite Database.'))
-    .catch(err => console.error('Error connecting to the SQLite Database:', err));
 
 module.exports = dbWrapper;

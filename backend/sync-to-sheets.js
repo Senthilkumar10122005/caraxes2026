@@ -1,7 +1,4 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
+const db = require('./db');
 const axios = require('axios');
 
 async function syncToSheets() {
@@ -14,14 +11,9 @@ async function syncToSheets() {
     }
 
     try {
-        const db = await open({
-            filename: path.join(__dirname, 'database.sqlite'),
-            driver: sqlite3.Database
-        });
+        console.log('Fetching registrations from MySQL...');
 
-        console.log('Successfully connected to the SQLite Database.');
-
-        const rows = await db.all('SELECT * FROM registrations ORDER BY timestamp ASC');
+        const [rows] = await db.query('SELECT * FROM registrations ORDER BY timestamp ASC');
 
         if (rows.length === 0) {
             console.log('No registrations found to sync.');
@@ -69,9 +61,10 @@ async function syncToSheets() {
         console.log(`Failed: ${failCount}`);
         console.log('--------------------\n');
 
-        await db.close();
     } catch (error) {
         console.error("Critical error during sync:", error.message);
+    } finally {
+        process.exit();
     }
 }
 
