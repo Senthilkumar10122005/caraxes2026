@@ -4,6 +4,7 @@ const bookingController = require('../controllers/bookingController');
 const authMiddleware = require('../middleware/auth');
 
 router.post('/', authMiddleware(), bookingController.bookTicket);
+router.post('/send-otp', authMiddleware(), bookingController.sendOtp);
 router.get('/:booking_id', authMiddleware(), bookingController.getTicket);
 
 module.exports = router;

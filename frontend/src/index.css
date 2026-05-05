@@ -1,8 +1,95 @@
 @import "tailwindcss";
 
+:root {
+  --aurora-pink: #f43f5e;
+  --aurora-cyan: #0ea5e9;
+  --aurora-violet: #8b5cf6;
+}
+
+body {
+  background-color: #020617; /* slate-950 */
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Base Glass Card */
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Premium Aurora Glass Card (Glows on Hover) */
+.aurora-glass-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  transition: all 0.4s ease;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.aurora-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 1.5rem;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-violet), var(--aurora-pink));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.aurora-glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px -10px rgba(139, 92, 246, 0.3);
+}
+
+.aurora-glass-card:hover::before {
+  opacity: 1;
+}
+
+/* Animated Gradient Text */
+.text-gradient-aurora {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--aurora-cyan), var(--aurora-violet), var(--aurora-pink), var(--aurora-cyan));
+  background-size: 300% 100%;
+  animation: gradientFlow 8s ease infinite;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Blob Backgrounds */
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  z-index: -10;
+  animation: float 10s ease-in-out infinite alternate;
+}
+
+.blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--aurora-cyan); }
+.blob-2 { top: 40%; right: -20%; width: 60vw; height: 60vw; background: var(--aurora-violet); animation-delay: -3s; }
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5%, 5%) scale(1.1); }
+  100% { transform: translate(-5%, -5%) scale(0.9); }
 }

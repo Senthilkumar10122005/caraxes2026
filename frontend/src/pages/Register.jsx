@@ -7,21 +7,40 @@ export default function Register() {
     const navigate = useNavigate();
     const [form, setForm] = useState({ name: '', email: '', password: '' });
 
+    const [error, setError] = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
+        if (form.phone.length < 10) {
+            setError('Phone number must be at least 10 digits');
+            toast.error('Phone number must be at least 10 digits');
+            return;
+        }
+
+        if (form.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            toast.error('Password must be at least 6 characters');
+            return;
+        }
+
         try {
             await axios.post('http://localhost:3000/api/auth/register', form);
             toast.success('Registration complete! Please login.');
             navigate('/login');
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Registration failed');
+            const errorMsg = err.response?.data?.message || 'Registration failed';
+            setError(errorMsg);
+            toast.error(errorMsg);
         }
     };
 
     return (
         <div className="max-w-md mx-auto pt-16 animate-in slide-in-from-bottom-4">
-            <div className="glass-card p-8 rounded-2xl border-t-4 border-t-emerald-500 shadow-xl shadow-emerald-900/20">
+            <div className="aurora-glass-card p-8 rounded-2xl border-t-4 border-t-emerald-500 shadow-xl shadow-emerald-900/20">
                 <h2 className="text-3xl font-bold mb-6 text-white">Create Account</h2>
+                {error && <div className="mb-4 p-3 bg-rose-500/20 border border-rose-500/50 rounded-lg text-rose-400 text-sm">{error}</div>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="text-sm font-medium text-slate-300">Full Name</label>

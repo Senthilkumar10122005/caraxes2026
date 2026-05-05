@@ -5,13 +5,13 @@ import { CalendarDays, ShieldCheck, LogIn, LayoutDashboard, LogOut } from 'lucid
 
 import { AuthProvider, AuthContext } from './AuthContext';
 
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Booking from './pages/Booking';
 import TicketView from './pages/Ticket';
 import Admin from './pages/Admin';
+import Chatbot from './components/Chatbot';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -27,13 +27,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-6">
             {!user ? (
               <>
-                <Link to="/login" className="text-sm font-medium text-slate-300 hover:text-white transition flex items-center gap-1">
-                  <LogIn className="w-4 h-4" /> User Login
-                </Link>
-                <Link to="/register" className="text-sm font-medium bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 px-4 py-1.5 rounded-full transition">Register</Link>
-                <Link to="/login" className="text-sm font-bold text-amber-400 hover:text-amber-300 transition flex items-center gap-1 ml-4 border-l border-slate-700 pl-4">
-                  <ShieldCheck className="w-4 h-4" /> Admin Login
-                </Link>
+                <Link to="/register" className="text-sm font-medium bg-gradient-to-r from-sky-500 to-indigo-500 text-white hover:from-sky-400 hover:to-indigo-400 px-5 py-2 rounded-full transition shadow-lg shadow-sky-500/20">Register Now</Link>
               </>
             ) : (
               <>
@@ -74,8 +68,8 @@ function App() {
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Routes>
               {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Navigate to="/" />} />
               <Route path="/register" element={<Register />} />
               <Route path="/ticket/:bookingId" element={<TicketView />} />
               
@@ -87,6 +81,7 @@ function App() {
               <Route path="/admin" element={<RequireAuth roleRequired="admin"><Admin /></RequireAuth>} />
             </Routes>
           </main>
+          <Chatbot />
           <Toaster position="bottom-right" toastOptions={{ style: { background: '#1e293b', color: '#fff', border: '1px solid #334155' }}} />
         </div>
       </AuthProvider>

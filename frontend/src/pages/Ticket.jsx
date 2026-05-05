@@ -32,7 +32,7 @@ export default function TicketView() {
 
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in zoom-in-95 duration-500 py-8">
-      <div className="glass-card rounded-3xl overflow-hidden relative border-t-8 border-t-sky-500 shadow-2xl shadow-sky-900/20">
+      <div className="aurora-glass-card rounded-3xl overflow-hidden relative border-t-8 border-t-sky-500 shadow-2xl shadow-sky-900/20">
         
         {/* Ticket Header */}
         <div className="bg-slate-900/80 p-8 border-b border-slate-800/50 flex flex-col md:flex-row justify-between md:items-center gap-4">

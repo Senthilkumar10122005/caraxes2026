@@ -62,6 +62,10 @@ async function initializeDb() {
                 booking_id VARCHAR(100) UNIQUE NOT NULL,
                 user_id INT NOT NULL,
                 event_id INT NOT NULL,
+                team_name VARCHAR(255) DEFAULT NULL,
+                team_members INT DEFAULT 1,
+                team_member_names TEXT DEFAULT NULL,
+                contact_email VARCHAR(255) DEFAULT NULL,
                 status ENUM('VALID', 'USED') DEFAULT 'VALID',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -88,7 +92,10 @@ async function initializeDb() {
                 ('Hackathon', 'Build innovative real-world solutions under pressure.', 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800', '2026-03-15', '11:00 AM', 'Innovation Lab', 250.00, 200, 200),
                 ('Paper Presentation', 'Showcase your research and technical communication skills.', 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800', '2026-03-15', '11:00 AM', 'Seminar Hall', 100.00, 100, 100),
                 ('Treasure Hunt', 'Follow the clues, solve the riddles.', 'https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=800', '2026-03-16', '11:00 AM', 'Campus Wide', 50.00, 300, 300),
-                ('Quiz Mania', 'Test your knowledge across various domains.', 'https://images.unsplash.com/photo-1534330207226-e13fa1536326?w=800', '2026-03-16', '11:00 AM', 'Mini Auditorium', 0.00, 250, 250)
+                ('Quiz Mania', 'Test your knowledge across various domains.', 'https://images.unsplash.com/photo-1534330207226-e13fa1536326?w=800', '2026-03-16', '11:00 AM', 'Mini Auditorium', 0.00, 250, 250),
+                ('Debugging Battle', 'Find and squash the most complex bugs.', 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800', '2026-03-15', '02:00 PM', 'Lab 3', 0.00, 100, 100),
+                ('Web Design', 'Craft the most beautiful and responsive web interfaces.', 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800', '2026-03-16', '10:00 AM', 'Lab 4', 0.00, 120, 120),
+                ('E-Sports', 'Compete in high-octane gaming tournaments.', 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800', '2026-03-16', '01:00 PM', 'Main Auditorium', 150.00, 200, 200)
             `);
         }
 
